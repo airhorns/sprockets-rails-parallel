@@ -10,7 +10,7 @@ module Sprockets
           return compile_without_workers
         end
 
-        worker_count = (Rails.application.config.assets.precompile_workers || 4).to_i
+        worker_count = (::Rails.application.config.assets.precompile_workers || 4).to_i
 
         paths = env.each_logical_path.reject {|logical_path| !compile_path?(logical_path)}
         total_count = paths.length
