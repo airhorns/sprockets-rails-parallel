@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name      = 'sprockets-rails-parallel'
-  s.version   = '0.0.1'
+  s.version   = '0.0.3'
   s.date      = '2012-05-25'
 
   s.homepage    = "https://github.com/hornairs/sprockets-rails-parallel"

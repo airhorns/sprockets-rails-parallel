@@ -6,11 +6,11 @@ module Sprockets
       KILL_MESSAGE = "die die die!!!!"
 
       def compile_with_workers
-        unless ::Rails.application.config.assets.parallel_compile
+        unless ::Rails.application.config.assets.parallel_precompile
           return compile_without_workers
         end
 
-        worker_count = (Rails.application.config.assets.compile_workers || 4).to_i
+        worker_count = (Rails.application.config.assets.precompile_workers || 4).to_i
 
         paths = env.each_logical_path.reject {|logical_path| !compile_path?(logical_path)}
         total_count = paths.length
