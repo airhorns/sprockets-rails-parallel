@@ -7,7 +7,7 @@ module Sprockets
 
       def compile_with_workers
         unless ::Rails.application.config.assets.parallel_compile
-          return compile_with_workers
+          return compile_without_workers
         end
 
         worker_count = (Rails.application.config.assets.compile_workers || 4).to_i
