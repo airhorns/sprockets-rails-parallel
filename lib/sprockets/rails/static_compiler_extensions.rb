@@ -3,16 +3,21 @@ require 'ffi-rzmq'
 module Sprockets
   module Rails
     class StaticCompiler
-      WORKERS = 8
       KILL_MESSAGE = "die die die!!!!"
 
-      def compile
+      def compile_with_workers
+        unless ::Rails.application.config.assets.parallel_compile
+          return compile_with_workers
+        end
+
+        worker_count = (Rails.application.config.assets.compile_workers || 4).to_i
+
         paths = env.each_logical_path.reject {|logical_path| !compile_path?(logical_path)}
         total_count = paths.length
         manifest = {}
 
         begin
-          workers = 1.upto(WORKERS).map do
+          workers = 1.upto(worker_count).map do
             fork do
               child_context = ZMQ::Context.new(1)
               child_receiver = child_context.socket(ZMQ::PULL)
@@ -46,7 +51,7 @@ module Sprockets
           receiver.bind("tcp://127.0.0.1:55547")
 
           # Sync workers by blocking on a recieve from each one
-          WORKERS.times do
+          worker_count.times do
             pid = ''
             receiver.recv_string(pid)
           end
@@ -69,6 +74,8 @@ module Sprockets
 
         manifest
       end
+
+      alias_method_chain :compile, :workers
     end
   end
 end
