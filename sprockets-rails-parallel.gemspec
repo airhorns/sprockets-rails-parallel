@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.summary     = "Precompile them assets with the power of modern computing!"
   s.description = ""
 
-  s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
+  s.files = Dir["lib/**/*"] + ["LICENSE", "README.md"]
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency 'sprockets', "~>2.4.0"
