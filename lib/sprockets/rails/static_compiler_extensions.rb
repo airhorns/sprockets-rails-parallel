@@ -9,7 +9,7 @@ module Sprockets
         unless ::Rails.application.config.assets.parallel_precompile
           return compile_without_workers
         end
-
+        puts "Compiling in parallel."
         worker_count = (::Rails.application.config.assets.precompile_workers || 4).to_i
 
         paths = env.each_logical_path.reject {|logical_path| !compile_path?(logical_path)}
@@ -72,7 +72,7 @@ module Sprockets
           end
         end
 
-        manifest
+        write_manifest(manifest) if @manifest
       end
 
       alias_method_chain :compile, :workers
