@@ -9,12 +9,15 @@ module Sprockets
         unless ::Rails.application.config.assets.parallel_precompile
           return compile_without_workers
         end
-        puts "Compiling in parallel."
         worker_count = (::Rails.application.config.assets.precompile_workers || 4).to_i
 
         paths = env.each_logical_path.reject {|logical_path| !compile_path?(logical_path)}
         total_count = paths.length
         manifest = {}
+
+        dir = Dir.mktmpdir
+        push_address = "ipc://#{dir}/push"
+        pull_address = "ipc://#{dir}/pull"
 
         begin
           workers = 1.upto(worker_count).map do
@@ -22,9 +25,8 @@ module Sprockets
               child_context = ZMQ::Context.new(1)
               child_receiver = child_context.socket(ZMQ::PULL)
               child_sender = child_context.socket(ZMQ::PUSH)
-              child_receiver.connect("tcp://127.0.0.1:55546")
-              child_sender.connect("tcp://127.0.0.1:55547")
-
+              child_receiver.connect(push_address)
+              child_sender.connect(pull_address)
               # Send synchronization string
               child_sender.send_string(Process.pid.to_s)
 
@@ -47,11 +49,11 @@ module Sprockets
           context = ZMQ::Context.new(1)
           sender = context.socket(ZMQ::PUSH)
           receiver = context.socket(ZMQ::PULL)
-          sender.bind("tcp://127.0.0.1:55546")
-          receiver.bind("tcp://127.0.0.1:55547")
+          sender.bind(push_address)
+          receiver.bind(pull_address)
 
           # Sync workers by blocking on a recieve from each one
-          worker_count.times do
+          worker_count.times do |i|
             pid = ''
             receiver.recv_string(pid)
           end
