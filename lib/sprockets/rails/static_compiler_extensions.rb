@@ -61,7 +61,7 @@ module Sprockets
           Timeout::timeout 5 do
             # Sync workers by blocking on a recieve from each one
             worker_count.times do |i|
-              pid = ''
+              pid = ""
               receiver.recv_string(pid)
             end
           end
@@ -75,10 +75,10 @@ module Sprockets
             result = Marshal.load(string)
             manifest.update result
           end
-
         ensure
           if workers
             workers.each {|pid| sender.send_string(KILL_MESSAGE) }
+            workers.each {|pid| Process.waitpid(pid) }
           end
         end
         write_manifest(manifest) if @manifest
