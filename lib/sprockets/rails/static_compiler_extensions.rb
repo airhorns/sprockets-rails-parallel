@@ -2,6 +2,7 @@ require 'ffi-rzmq'
 require 'tmpdir'
 require 'timeout'
 
+
 module Sprockets
   module Rails
     class StaticCompiler
@@ -38,6 +39,7 @@ module Sprockets
                 begin
                   logical_path = ""
                   child_receiver.recv_string(logical_path)
+                  logical_path.force_encoding("UTF-8")
                 rescue Interrupt
                   exit
                 end
@@ -65,7 +67,7 @@ module Sprockets
           end
 
           paths.each do |path|
-            sender.send_string(path)
+            sender.send_string(path.encode("UTF-8"))
           end
 
           total_count.times do |x|
@@ -79,7 +81,6 @@ module Sprockets
             workers.each {|pid| sender.send_string(KILL_MESSAGE) }
           end
         end
-
         write_manifest(manifest) if @manifest
       end
 
