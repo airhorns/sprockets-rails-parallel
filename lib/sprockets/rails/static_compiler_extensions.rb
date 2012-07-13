@@ -1,4 +1,6 @@
 require 'ffi-rzmq'
+require 'tmpdir'
+require 'timeout'
 
 module Sprockets
   module Rails
@@ -52,10 +54,12 @@ module Sprockets
           sender.bind(push_address)
           receiver.bind(pull_address)
 
-          # Sync workers by blocking on a recieve from each one
-          worker_count.times do |i|
-            pid = ''
-            receiver.recv_string(pid)
+          Timeout::timeout 5 do
+            # Sync workers by blocking on a recieve from each one
+            worker_count.times do |i|
+              pid = ''
+              receiver.recv_string(pid)
+            end
           end
 
           paths.each do |path|
