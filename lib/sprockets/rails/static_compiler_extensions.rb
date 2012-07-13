@@ -64,23 +64,27 @@ module Sprockets
               pid = ''
               receiver.recv_string(pid)
             end
+            puts "Workers spawned."
           end
 
           paths.each do |path|
             sender.send_string(path.encode("UTF-8"))
           end
+          puts "Paths sent."
 
           total_count.times do |x|
             receiver.recv_string(string = "")
             result = Marshal.load(string)
             manifest.update result
           end
-
+          puts "Paths received."
         ensure
           if workers
             workers.each {|pid| sender.send_string(KILL_MESSAGE) }
+            workers.each {|pid| p Process.waitpid(pid) }
           end
         end
+        puts "Workers dead; writing manifest."
         write_manifest(manifest) if @manifest
       end
 
