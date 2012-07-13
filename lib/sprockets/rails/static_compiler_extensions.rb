@@ -11,6 +11,7 @@ module Sprockets
         unless ::Rails.application.config.assets.parallel_precompile
           return compile_without_workers
         end
+        puts "Compiling in parallel."
         worker_count = (::Rails.application.config.assets.precompile_workers || 4).to_i
 
         paths = env.each_logical_path.reject {|logical_path| !compile_path?(logical_path)}
@@ -35,7 +36,8 @@ module Sprockets
               loop do
                 # Allocate, 0mq requires it. (lol)
                 begin
-                  child_receiver.recv_string(logical_path = "")
+                  logical_path = ""
+                  child_receiver.recv_string(logical_path)
                 rescue Interrupt
                   exit
                 end
