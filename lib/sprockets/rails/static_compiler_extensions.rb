@@ -51,13 +51,15 @@ module Sprockets
               end
             end
           end
-
+          puts "Workers spawned."
+          puts workers
           context = ZMQ::Context.new(1)
           sender = context.socket(ZMQ::PUSH)
           receiver = context.socket(ZMQ::PULL)
           sender.bind(push_address)
           receiver.bind(pull_address)
 
+          puts "Waiting for worker sync..."
           Timeout::timeout 5 do
             # Sync workers by blocking on a recieve from each one
             worker_count.times do |i|
@@ -66,21 +68,25 @@ module Sprockets
             end
           end
 
+          puts "Workers synced, sending paths"
           paths.each do |path|
             sender.send_string(path.encode("UTF-8"))
           end
 
+          puts "Paths sent, waiting on results"
           total_count.times do |x|
             receiver.recv_string(string = "")
             result = Marshal.load(string)
             manifest.update result
           end
         ensure
+          puts "Killing workers"
           if workers
             workers.each {|pid| sender.send_string(KILL_MESSAGE) }
-            workers.each {|pid| Process.waitpid(pid) }
+            workers.each {|pid| puts "Waiting on pid #{pid}"; Process.waitpid(pid) }
           end
         end
+        puts "Results recieved and workers killed"
         write_manifest(manifest) if @manifest
       end
 
