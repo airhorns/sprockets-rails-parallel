@@ -8,8 +8,8 @@ module Sprockets
           return compile_without_threads
         end
 
-        puts "Compiling in parallel."
         thread_count = (::Rails.application.config.assets.precompile_threads || 12).to_i
+        puts "Compiling in parallel w/ #{thread_count} threads."
 
         paths = env.each_logical_path.reject {|logical_path| !compile_path?(logical_path)}
         total_count = paths.length

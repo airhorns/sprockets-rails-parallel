@@ -1,0 +1,22 @@
+Jesses-MacBook-Pro:shopify jstorimer$ ruby asset-compilation-bench.rb 
+                                     user     system      total        real
+no parallelization               0.000000   0.000000  52.420000 (137.753395)
+multi-thread parallelization @ 4  0.000000   0.000000  47.540000 ( 76.259939)
+multi-thread parallelization @ 12  0.000000   0.000000  55.280000 ( 71.065993)
+multi-thread parallelization @ 18  0.000000   0.000000  44.650000 ( 94.625203)
+multi-process parallelization @ 4  0.000000   0.000000  63.150000 ( 80.518016)
+multi-process parallelization @ 8  0.000000   0.000000  75.860000 (275.123535)
+Jesses-MacBook-Pro:shopify jstorimer$   export RUBY_HEAP_MIN_SLOTS=800000
+Jesses-MacBook-Pro:shopify jstorimer$   export RUBY_HEAP_FREE_MIN=100000
+Jesses-MacBook-Pro:shopify jstorimer$   export RUBY_HEAP_SLOTS_INCREMENT=300000
+Jesses-MacBook-Pro:shopify jstorimer$   export RUBY_HEAP_SLOTS_GROWTH_FACTOR=1
+Jesses-MacBook-Pro:shopify jstorimer$   export RUBY_GC_MALLOC_LIMIT=79000000
+Jesses-MacBook-Pro:shopify jstorimer$ ruby asset-compilation-bench.rb 
+                                     user     system      total        real
+no parallelization               0.000000   0.000000  35.940000 ( 99.593050)
+multi-thread parallelization @ 4  0.000000   0.000000  40.280000 ( 64.388987)
+multi-thread parallelization @ 12  0.000000   0.000000  40.570000 ( 55.465501)
+multi-thread parallelization @ 18  0.000000   0.000000  36.400000 ( 54.625871)
+multi-process parallelization @ 4  0.000000   0.000000  48.360000 ( 92.024623)
+multi-process parallelization @ 8  0.000000   0.000000  61.060000 (364.976821)
+Jesses-MacBook-Pro:shopify jstorimer$ vim Gemfile
